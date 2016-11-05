@@ -15,3 +15,5 @@ sudo apt-get install curl -y
 curl -sL https://raw.githubusercontent.com/brainsik/virtualenv-burrito/master/virtualenv-burrito.sh | $SHELL
 source ~/.venvburrito/startup.sh
 mkvirtualenv dotbot
+
+ln -s /vragrant/code $VIRTUAL_ENV/code
