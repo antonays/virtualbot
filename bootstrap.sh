@@ -16,4 +16,4 @@ curl -sL https://raw.githubusercontent.com/brainsik/virtualenv-burrito/master/vi
 source ~/.venvburrito/startup.sh
 mkvirtualenv dotbot
 
-ln -s /vragrant/code $VIRTUAL_ENV/code
+ln -s /vragrant/code/ $VIRTUAL_ENV/code
