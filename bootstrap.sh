@@ -11,9 +11,29 @@ sudo apt-get install ros-kinetic-rosbridge-suite -y
 sudo apt-get install vim tmux -y
 sudo apt-get install supervisor -y
 sudo apt-get install curl -y
+sudo apt-get install build-essential -y
+sudo apt-get install python-catkin-pkg -y
 
 curl -sL https://raw.githubusercontent.com/brainsik/virtualenv-burrito/master/virtualenv-burrito.sh | $SHELL
 source ~/.venvburrito/startup.sh
 mkvirtualenv dotbot
+workon dotbot
 
-ln -s /vragrant/code/ $VIRTUAL_ENV/code
+
+if [ ! -d "$VIRTUAL_ENV/project" ]; then
+  mkdir $VIRTUAL_ENV/project
+  ln -s /vagrant/code/webapp $VIRTUAL_ENV/project/webapp
+fi
+
+if [ ! -d "$VIRTUAL_ENV/ros" ]; then
+  mkdir -p $VIRTUAL_ENV/ros/dotbot_ws/src
+  bash
+  source /opt/ros/kinetic/setup.bash
+  cd $VIRTUAL_ENV/ros/dotbot_ws/src
+  catkin_init_workspace
+  ln -s /vagrant/code/dotbot_ros ./dotbot_ros
+  cd ..
+  catkin_make
+  catkin_make install -DCMAKE_INSTALL_PREFIX=/opt/ros/kinetic
+  exit
+fi

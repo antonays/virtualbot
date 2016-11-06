@@ -1,3 +1,6 @@
 [submodule "code/webapp"]
 	path = code/webapp
 	url = https://github.com/dotbot-io/webapp
+[submodule "code/dotbot_ros"]
+	path = code/dotbot_ros
+	url = https://github.com/dotbot-io/dotbot_ros
