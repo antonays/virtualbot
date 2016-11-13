@@ -11,29 +11,63 @@ sudo apt-get install ros-kinetic-rosbridge-suite -y
 sudo apt-get install vim tmux -y
 sudo apt-get install supervisor -y
 sudo apt-get install curl -y
+sudo apt-get install git -y
 sudo apt-get install build-essential -y
 sudo apt-get install python-catkin-pkg -y
+sudo apt-get install nginx -y
 
-curl -sL https://raw.githubusercontent.com/brainsik/virtualenv-burrito/master/virtualenv-burrito.sh | $SHELL
-source ~/.venvburrito/startup.sh
+echo "finished basic framework installations ..."
+
+sudo apt-get install python-pip -y
+sudo apt-get install python-virtualenv -y
+sudo pip install virtualenvwrapper
+echo "finished pip, virtualenv, virtualenvwrapper installations ..."
+sudo pip install uwsgi
+
+source /usr/local/bin/virtualenvwrapper.sh
 mkvirtualenv dotbot
+echo "created workspace ..."
 workon dotbot
+deactivate
+echo "exited from workspace ..."
 
-
-if [ ! -d "$VIRTUAL_ENV/project" ]; then
-  mkdir $VIRTUAL_ENV/project
-  ln -s /vagrant/code/webapp $VIRTUAL_ENV/project/webapp
+if [ ! -d "~/project" ]; then
+  echo "creating project directory ..."
+  mkdir ~/project
+  git clone https://github.com/dotbot-io/dotbot_ros
+  echo "created project directory ..."
+  echo "cloned ros directory to project ..."
 fi
 
-if [ ! -d "$VIRTUAL_ENV/ros" ]; then
-  mkdir -p $VIRTUAL_ENV/ros/dotbot_ws/src
+if [ ! -d "~/ros" ]; then
+  echo "creating ros directory ..."
+  mkdir -p ~/ros/dotbot_ws/src
   bash
   source /opt/ros/kinetic/setup.bash
-  cd $VIRTUAL_ENV/ros/dotbot_ws/src
+  cd ~/ros/dotbot_ws/src
   catkin_init_workspace
-  ln -s /vagrant/code/dotbot_ros ./dotbot_ros
+  echo "initialized catkin workspace ..."
+  git clone https://github.com/dotbot-io/dotbot_ros
   cd ..
   catkin_make
-  catkin_make install -DCMAKE_INSTALL_PREFIX=/opt/ros/kinetic
-  exit
+  echo "finished catkin_make ..."
+  sudo su -c "source /opt/ros/kinetic/setup.bash; catkin_make install -DCMAKE_INSTALL_PREFIX=/opt/ros/kinetic"
+  echo "installed ros directory ..."
 fi
+
+workon dotbot
+mkdir ~/.virtualenvs/dotbot/project
+cd ~/.virtualenvs/dotbot/project/
+git clone https://github.com/dotbot-io/robot-manager.git
+echo "cloned project manager application ..."
+cd robot-manager/
+
+pip install -r requirements.txt
+echo "installed project dependencies ..."
+deactivate
+
+sudo rm -rf ~/ros/dotbot_ws/src/dotbot_ros
+echo "removed source code from ros/src ..."
+echo "Done installation"
+
+# setup nginx server
