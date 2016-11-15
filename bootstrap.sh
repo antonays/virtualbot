@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 echo "starting ..."
-echo $(whoami)
+echo "i am $(whoami)"
+echo "================="
 sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
 sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 0xB01FA116
 
@@ -64,10 +65,26 @@ cd robot-manager/
 
 pip install -r requirements.txt
 echo "installed project dependencies ..."
-deactivate
+
 
 sudo rm -rf ~/ros/dotbot_ws/src/dotbot_ros
 echo "removed source code from ros/src ..."
+
+echo "setting up nginx configurations ..."
+mkdir ~/.virtualenvs/dotbot/run
+sudo mkdir /var/log/uwsgi
+sudo touch /var/log/uwsgi/uwsgi-dotbot.log
+sudo rm /etc/nginx/sites-available/default 
+sudo wget -O /etc/nginx/sites-available/robot-manager https://raw.githubusercontent.com/dotbot-io/server_config/master/robot-manager
+echo "copied nginx file ..."
+sudo wget -O /etc/supervisor/conf.d/uwsgi-dotbot.conf https://raw.githubusercontent.com/dotbot-io/server_config/master/uwsgi-dotbot.conf
+echo "copied supervisor config file ..."
+sudo ln -s /etc/nginx/sites-available/robot-manager /etc/nginx/sites-enabled
+sudo service supervisor restart
+sudo service nginx restart 
+deactivate
+
+
 echo "Done installation"
 
-# setup nginx server
+sudo apt-get clean
